@@ -5,10 +5,41 @@ const cors = require('cors')
 const bodyParser = require('body-parser')
 const VisitorRoutes = require('./routes/visitor.route')
 const path = require('path')
+const http = require('http');
+const https = require('https');
+const fs = require('fs');
 require('dotenv').config();
 
 app.use(cors())
 app.use(bodyParser.json())
+app.use('/api/visitor', VisitorRoutes)
+
+const credentials = {} 
+const ENVIRONMENT = process.env.ENVIRONMENT || 'local';
+if(ENVIRONMENT == "STAGING" || ENVIRONMENT == "PRODUCTION") {
+  const CREDDIR = process.env.CREDDIR
+  
+  const privateKey = fs.readFileSync(CREDDIR+'privkey.pem', 'utf8');
+  const certificate = fs.readFileSync(CREDDIR+'cert.pem', 'utf8');
+  const ca = fs.readFileSync(CREDDIR+'chain.pem', 'utf8');
+
+	credentials.key = privateKey,
+	credentials.cert = certificate,
+	credentials.ca = ca
+}
+
+var httpServer = http.createServer(app);
+const PORT = process.env.PORT || 8080;
+httpServer.listen(PORT);
+console.log(`HTTP is running on port ${PORT}.`);
+
+if(credentials.cert) {
+  const HTTPSPORT = process.env.HTTPSPORT || 8443;
+  var httpsServer = https.createServer(credentials, app);
+  httpsServer.listen(HTTPSPORT);
+  console.log(`HTTPS is running on port ${HTTPSPORT}.`);
+
+}
 
 mongoose
     .connect(process.env.MONGO_URI, {
@@ -18,7 +49,3 @@ mongoose
     })
     .then(() => console.log('MongoDB database Connected...'))
     .catch((err) => console.log(err))
-
-app.use('/api/visitor', VisitorRoutes)
-
-app.listen(process.env.PORT, () => console.log(`App listening at http://localhost:${process.env.PORT}`))
