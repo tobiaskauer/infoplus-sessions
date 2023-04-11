@@ -39,6 +39,7 @@ mongoose
     .catch((err) => console.log(err))
 
 const PORT = process.env.PORT || 8443;
+console.log(credentials)
 if(credentials.cert) {
   var httpsServer = https.createServer(credentials, app);
   httpsServer.listen(PORT);
