@@ -28,18 +28,6 @@ if(ENVIRONMENT == "STAGING" || ENVIRONMENT == "PRODUCTION") {
 	credentials.ca = ca
 }
 
-var httpServer = http.createServer(app);
-const PORT = process.env.PORT || 8080;
-httpServer.listen(PORT);
-console.log(`HTTP is running on port ${PORT}.`);
-
-if(credentials.cert) {
-  const HTTPSPORT = process.env.HTTPSPORT || 8443;
-  var httpsServer = https.createServer(credentials, app);
-  httpsServer.listen(HTTPSPORT);
-  console.log(`HTTPS is running on port ${HTTPSPORT}.`);
-
-}
 
 mongoose
     .connect(process.env.MONGO_URI, {
@@ -49,3 +37,15 @@ mongoose
     })
     .then(() => console.log('MongoDB database Connected...'))
     .catch((err) => console.log(err))
+
+const PORT = process.env.PORT || 8443;
+if(credentials.cert) {
+  var httpsServer = https.createServer(credentials, app);
+  httpsServer.listen(PORT);
+  console.log(`HTTPS is running on port ${PORT}.`);
+} else {
+    var httpServer = http.createServer(app);
+    httpServer.listen(PORT);
+    console.log(`HTTP is running on port ${PORT}.`);
+}
+
