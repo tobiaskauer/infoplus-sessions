@@ -87,12 +87,6 @@ const getVisitorData = () => {
 
       success: function (data, status, xhr) {
         console.log(`[success] Received ${data.length} visitor traces from server.`)
-        
-        
-        data = data.concat(data)
-        data = data.concat(data)
-
-        console.log(data)
         nodes = renderNodes(data)
         renderVis()
       },
