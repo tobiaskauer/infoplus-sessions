@@ -1,126 +1,242 @@
+let target = "section#header"
+let api = "https://viscussion.de:3003/api/visitor"
+//api = "http://localhost:3003/api/visitor"
+let updateInterval = 30000
+let nodes = []
+let colorScale = d3.scaleOrdinal().domain(["practitioner","educator","researcher"]).range(["#B01CF5","#778AFF","#1CF5F5"])
 
 
 let visitorData = {
-    id: null,
-    start: Date.now(),
-    browserOrigin: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    browserLanguage: navigator.language, 
-    category: null, //TODO
-    duration: null //TODO
+  id: null,
+  start: Date.now(),
+  browserOrigin: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  browserLanguage: navigator.language, 
+  category: null,
+  duration: 0
+
+  //TODO: retrieve values from localStorage
 }
 
+
+
+
+
+//BEGIN: SEND USER DETAILS TO API
 function sendVisitorData(id) {
-    const method = "POST";
-    let url = "http://localhost:3001/api/visitor";
-    url+= (id) ? "/"+id : ""
+  let url = (id) ? api+"/"+id : api
+  let data = {
+    "duration": visitorData.duration,
+    "category": visitorData.category
+}
+  if(!id) {
+    data.browserOrigin = visitorData.browserOrigin
+    data.browserLanguage = visitorData.browserLanguage
+  }  
+  //console.log(`[sending] user trace`)
+  $.ajax({
+    type: 'POST',
+    dataType:"json",
+    data: JSON.stringify(data),
+    url: url,
+    contentType: "application/json; charset=utf-8",
 
-    const xhr =  new XMLHttpRequest(); //TODo: rewrite to $.ajax (were using jq anyway)
-    xhr.open(method, url, true);
-    xhr.setRequestHeader('Content-type', 'application/json');
+    success: function (data, status, xhr) {
+      if(!id) visitorData.id = data._id
+      //console.log(`[received] user trace`)
+    },
 
-    xhr.onreadystatechange = () => {
-        if (xhr.readyState === XMLHttpRequest.DONE) {
-            const status = xhr.status;
-            if (status === 0 || (status >= 200 && status < 400)) {
-                let response = JSON.parse(xhr.responseText)
-                if(!id) visitorData.id = response._id
-            } else {
-                console.log(xhr.responseText);
-            }
-        }
-    };
-    xhr.send(JSON.stringify({
-        browserOrigin: visitorData.browserOrigin,
-        browserLanguage: visitorData.browserLanguage,
-        duration: visitorData.duration,
-        category: visitorData.category
-    }));
+    error: function(error, status, xhr) {
+        console.log(error, status, xhr)
+    }
+  });
 
-    setInterval(() => {
-        updateVisitor()
-    }, 5000);
 }
 
 
-const updateVisitor = () => {
-    visitorData.duration = Date.now() - visitorData.start 
-    sendVisitorData(visitorData.id) 
+const updateVisitor = (category) => {
+  visitorData.duration = Date.now() - visitorData.start 
+  if(category) {
+    visitorData.category = category
+    nodes[0].color = colorScale(category)
+  }
+  sendVisitorData(visitorData.id) 
+  //TODO: Update nodes[0]
 }
 
 sendVisitorData() //initial data query
+setInterval(() => {
+  if(visitorData.id) updateVisitor()
+}, updateInterval);
+//END: SEND USER DETAILS TO API
 
 
+
+
+
+
+
+
+//BEGIN: VISUALIZATION
 const getVisitorData = () => {
-    $.ajax({
-        type: 'GET',
-        dataType:"json",
-        url: 'http://localhost:3001/api/visitor',
-        contentType: "application/json; charset=utf-8",
+  //console.log(`[waiting] for visitor data`)
+  $.ajax({
+      type: 'GET',
+      dataType:"json",
+      url: api,
+      contentType: "application/json; charset=utf-8",
 
-        success: function (data, status, xhr) {
-          const nodes = renderNodes(data)
-          renderVis(nodes)
-        },
+      success: function (data, status, xhr) {
+        console.log(`[success] Received ${data.length} visitor traces from server.`)
+        
+        
+        data = data.concat(data)
+        data = data.concat(data)
 
-        error: function(error, status, xhr) {
-            console.log(error, status, xhr)
-        }
-      });
+        console.log(data)
+        nodes = renderNodes(data)
+        renderVis()
+      },
+
+      error: function(error, status, xhr) {
+          console.log(error, status, xhr)
+      }
+    });
 }
 
 getVisitorData()
 
 const renderNodes = (data) => {
-    
-    let radiusScale = d3.scaleLinear().domain(d3.extent(data, visit => visit.duration)).range([5,10])
-    let colorScale = d3.scaleOrdinal().domain(["practitioner","educator","researcher"]).range(["red","green","blue"])
-    let nodes = data.map(node => {
-        console.log(node.category)
-        return {
-            radius: node.duration ? radiusScale(node.duration) : 1,
-            color: node.category ? colorScale(node.category) : "black"
-        }
-    })
-
-    
-
-    return nodes
-}
-
-const renderVis = (nodes) => {
-
-    console.log(nodes)
-    
-
-    const svg = d3.select("#vis").append("svg").attr("width",400).attr("height",400)
-
-    var simulation = d3.forceSimulation(nodes)
-  .force('charge', d3.forceManyBody().strength(1))
-  .force('center', d3.forceCenter(400 / 2, 400 / 2))
-  .force('collision', d3.forceCollide().radius(function(d) {
-    return d.radius
-  }))
-  .on('tick', ticked);
-
-    function ticked() {
-        var u = d3.select('svg')
-          .selectAll('circle')
-          .data(nodes)
-      
-        u.enter()
-          .append('circle')
-          .attr('r', function(d) {
-            return d.radius
-          })
-          .merge(u)
-          .attr('cx', function(d) {
-            return d.x
-          })
-          .attr('cy', function(d) {
-            return d.y
-          })
-          .attr("fill", "black")
-      
-        u.exit().remove()
+  let radiusScale = d3.scaleLinear().domain(d3.extent(data, visit => visit.duration)).range([5,15])
+  
+  let nodes = data.map((node ,i)=> {
+    let color = node.category ? colorScale(node.category) : "#ffce1e"
+    let r = node.duration ? radiusScale(node.duration) : 1
+    if (!i) r = 20
+     
+    let wobbleB = Math.random()*0.5+0.8
+    let wobbleR = Math.random()*0.5+0.8
+    let path = `
+    M${wobbleR*r} ${.5*r}
+    C${wobbleR*r} ${.75*r} ${.75*r} ${wobbleB*r} ${.5*r} ${wobbleB*r}
+    C${0.25*r} ${wobbleB*r} 0 ${.75*r} 0 ${.5*r}
+    C0 ${.25*r} ${.25*r} 0 ${.5*r} 0
+    C${.75*r} 0 ${wobbleR*r} ${.25*r} ${wobbleR*r} ${.5*r}Z
+    `
+      return {
+          radius: r,
+          color: color,
+          path: path,
       }
+  })
+  
+  return nodes
 }
+
+const renderVis = () => {    
+let buffer = 20
+  let width = $(target).width()
+  let height = $(target).height()
+  const svg = d3.select(target).append("svg").attr("width",width).attr("height",height).attr("style","position: absolute; z-index: -999")
+
+const simulation = d3.forceSimulation(nodes)
+.alphaTarget(0.3) // stay hot
+.velocityDecay(0.09)
+.force("x", d3.forceX().strength(0.005))
+.force("y", d3.forceY(height/2).strength(0.02))
+.force("center", d3.forceCenter(width /2, height/2).strength(.5))
+.force("collide", d3.forceCollide().radius(d => d.radius ).iterations(2))
+.force("charge", d3.forceManyBody().strength((d, i) => i ? -1 : 200))
+.on("tick", ticked);
+
+
+d3.select(target)
+    .on("touchmove", event => event.preventDefault())
+    .on("pointermove", pointed)
+    .on("mouseleave", centerNode());
+
+    
+    function pointed(event) {
+      const [x, y] = d3.pointer(event);
+      nodes[0].fx = x;
+      nodes[0].fy = y;
+    }
+    function centerNode() {
+      //TODO: move first node to center
+      nodes[0].fx = width * .75;
+      nodes[0].fy = height/2;
+    }
+
+  function ticked() {
+        var u = svg
+        .selectAll('path')
+        .data(nodes)
+
+        u.enter()
+        .append('path')
+        .attr('d', d=> d.path)
+        .merge(u)
+        .attr("transform",d => {
+
+          let x = d.x
+          if(d.x < buffer) {
+            x = buffer
+          } else if(d.x >= width-buffer){
+            x = width-buffer
+          }
+
+          let y = d.y
+          if(d.y < buffer) {
+            y = buffer
+          } else if(d.y >= height-buffer){
+            y = height-buffer
+          }
+
+          let r = Math.random()*360
+          return `translate(${x-d.radius},${y-d.radius})`
+
+        })
+        /*.attr('cx', function(d) {
+          
+          
+        })
+        .attr('cy', function(d) {
+          if(d.y < buffer) return buffer
+          if(d.y >= height - buffer) return height-buffer
+          return d.y
+        })
+        */
+        .attr("fill", d => d.color)
+        .attr("opacity", (d,i) => i ? .3 : 1)
+
+    
+      u.exit().remove()
+    }
+}
+//END: VIS
+
+
+//BEGIN: USER FORM
+$(document).ready(function() {
+  $(".btn-group .btn").on("click",function(evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
+    $(".btn-group .btn").removeClass("active")
+    $( this ).toggleClass( "active" );
+    let category = $(this).children().val()
+    updateVisitor(category)
+  })
+
+  $(".btn#toggle").on("click",function(evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
+    $(".stickyForm").toggle("slow")
+    
+    if($(this).text() == "Hide survey") {
+      $(this).text("Show survey")
+    } else {
+      $(this).text("Hide survey")
+    }
+
+  })
+})
+

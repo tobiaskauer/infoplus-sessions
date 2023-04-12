@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const mongoose = require('mongoose')
+const mongoSanitize = require('express-mongo-sanitize')
 const cors = require('cors')
 const bodyParser = require('body-parser')
 const VisitorRoutes = require('./routes/visitor.route')
@@ -12,6 +13,7 @@ require('dotenv').config();
 
 app.use(cors())
 app.use(bodyParser.json())
+app.use(mongoSanitize({replaceWith: '_'}))
 app.use('/api/visitor', VisitorRoutes)
 
 const credentials = {} 
@@ -39,7 +41,6 @@ mongoose
     .catch((err) => console.log(err))
 
 const PORT = process.env.PORT || 8443;
-console.log(credentials)
 if(credentials.cert) {
   var httpsServer = https.createServer(credentials, app);
   httpsServer.listen(PORT);

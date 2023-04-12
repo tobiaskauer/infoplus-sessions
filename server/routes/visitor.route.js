@@ -1,15 +1,15 @@
 const { Router } = require('express')
 const Visitor = require('../models/visitor.model')
 
-//TODO: SANItIZE INPUTS
-
 const router = Router()
 
 router.get('/', async (req, res) => {
+    console.log(req.body)
     try {
-        const visitors = await Visitor.find()
+        const visitors = await Visitor.find({},'-_id category duration')
         if (!visitors) throw new Error('No Visitors found')
         res.status(200).json(visitors)
+        
     
     } catch (error) {
         res.status(500).json({ message: error.message })
@@ -22,6 +22,7 @@ router.post('/', async (req, res) => {
         const visitor = await newVisitor.save()
         if (!visitor) throw new Error('Something went wrong saving the Visitor')
         res.status(200).json(visitor)
+        
     } catch (error) {
         console.log(error)
         res.status(500).json({ message: error.message })
@@ -30,8 +31,8 @@ router.post('/', async (req, res) => {
 
 router.post('/:id', async (req, res) => {
     try {
-        const updatedVisitor = await Visitor.findOneAndUpdate(req.params.id,req.body)
-        res.status(200).json(updatedVisitor)
+        const updatedVisitor = await Visitor.findByIdAndUpdate(req.params.id,req.body)
+        res.status(200)
         
     } catch (error) {
         console.log(error) 

@@ -1,44 +1,134 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
+<head>
+  <title>Information+ Conference 2023</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous" />
+  <link rel="stylesheet" href="styles.css">
+
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+  <script src="visitor.js"></script>
 
 
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Retrieve and write visitor sessions</title>
-    
-    <script src="visitor.js"></script>
-  </head>
-  <body>
-	<div class="container">
-        <div class="row">
-            <div id="vis" class="col"></div>
-            <div class="col">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</div>
-        </div>
-    </div>
-    <div class="card" style="width: 18rem;">
-        <div class="card-body">
-          <h5 class="card-title">Who are you?</h5>
+  <!-- metatags -->
+  <meta property="og:title" content="Information+ Conference 2023" />
+  <meta property="og:description " content="Interdisciplinary practices in information design & visualization. Edinburgh,
+    22nd November – 24th November 2023" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://informationplusconference.com/2023/" />
+  <meta property="og:image" content="https://informationplusconference.com/2023/assets/infoplus2023small.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="" />
+  <meta property="og:image:height" content="" />
+  <meta property="og:image:alt" content="Information+ Conference 2023" />
+  <meta name="twitter:image" content="https://informationplusconference.com/2023/assets/infoplus2023small.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+</head>
 
-          <div class="card-text">
-            <p>We want to learn more about the infoplus community. What best secribes you? Lorem ipsum.</p>
-            <input type="radio" class="btn-check" name="options" id="option1" autocomplete="off" >
-            <label class="btn btn-outline-primary btn-sm" for="option1">Practitioner</label>
-            
-            <input type="radio" class="btn-check" name="options" id="option2" autocomplete="off">
-            <label class="btn btn-outline-primary btn-sm" for="option2">Educator</label>
-            
-            <input type="radio" class="btn-check" name="options" id="option4" autocomplete="off">
-            <label class="btn btn-outline-primary btn-sm" for="option4">Researcher</label>
+<body>
+  <section id="canvas">
+      <div class="container"> 
+          <div class="row">
+              <div class="col-lg">
+                  <section id="header">
+                      <div class="row">
+                          <div class="col-lg-12">
+                              <div class="row">
+                                  <div class="col-auto" >
+                                      <svg width="150" height="150" viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                          <path d="M128.913 93.5144C101.098 121.33 62.3836 127.713 42.4424 107.771C22.5011 87.83 28.8841 49.1159 56.6992 21.3008C84.5143 -6.51427 95.6782 37.0699 115.619 57.0111C135.561 76.9524 156.728 65.6994 128.913 93.5144Z" fill="#68F7DA">
+                                              <animateTransform
+                                              attributeName="transform"
+                                              attributeType="XML"
+                                              type="rotate"
+                                              from="0 75 75"
+                                              to="360 75 75"
+                                              dur="60s"
+                                              repeatCount="indefinite" />
+                                          </path>
+                                          <g style="mix-blend-mode:hard-light">
+                                          <path d="M120.321 67.0633C120.321 93.8491 127.816 123 93.0143 123C58.2125 123 30 101.286 30 74.5C30 47.7142 58.2125 26 93.0143 26C127.816 26 120.321 40.2775 120.321 67.0633Z" fill="#EE36F7">
+                                              <animateTransform
+                                              attributeName="transform"
+                                              attributeType="XML"
+                                              type="rotate"
+                                              from="0 75 75"
+                                              to="-360 75 75"
+                                              dur="120s"
+                                              repeatCount="indefinite" />
+                                          </path>
+                                          </g>
+                                          <g style="mix-blend-mode:hard-light">
+                                          <path d="M99.8681 119.759C75.0455 144.581 46.2395 114.671 26.9611 95.3924C7.68264 76.1139 5.23221 74.7678 30.0548 49.9452C54.8773 25.1227 90.6282 20.6282 109.907 39.9067C129.185 59.1851 124.691 94.936 99.8681 119.759Z" fill="#4F66F7">
+                                              <animateTransform
+                                              attributeName="transform"
+                                              attributeType="XML"
+                                              type="rotate"
+                                              from="0 75 75"
+                                              to="360 75 75"
+                                              dur="90s"
+                                              repeatCount="indefinite" />
+                                          </path>
+                                          </g>
+                                          <circle cx="76" cy="74.5257" r="38" fill="white"/>
+                                          </svg>
+</div>
+
+<div class="col">
+<h1>Information+<br> Conference 2023</h1>
+<h2>
+  Interdisciplinary practices in information design &
+  visualization
+</h2>
+<h3>
+  22<sup>nd</sup> November – 24<sup>th</sup> November
+  2023<br />
+  Edinburgh, UK
+</h3>
+<h5>
+  <a href="https://twitter.com/hashtag/infoplus2023?src=hashtag_click"
+      target="_blank">#infoplus2023</a>
+</h5>
+</div>
+</div>
+                              
+                          </div>
+                          <div class="col-lg-10">
+                              
+                          </div>
+                      </div>
+                  </section>
+              </div>
+          </div>
+      </div>
+      <canvas height="400"></canvas>
+      <canvas height="400" class="offscreen" style="display: none"> </canvas>
+
+
+  </section>
+
+      <div class="formToggle" style="position: fixed; bottom: 5px; right: 5px; z-index: 2;">
+          <button type="button" id="toggle" class="btn btn-light btn-sm">Hide survey</button>
+      </div>
+      <div class="stickyForm" style="width: 100%; position: fixed; left: 0px; bottom: 0px; height: auto; background: rgba(247,208,78,1); border-top: 3px solid rgba(255,255,255,.5); z-index: 1">
+          <div class="container p-2">
+              <p class="small" style="display: inline-block">Help us better understanding the composition of our community. How would you self-identify?</p>
+              <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                  <label class="btn btn-outline-dark btn-sm" id="researcher">
+                    <input type="radio" name="options" value="researcher" autocomplete="off" checked> Researcher
+                  </label>
+                  <label class="btn btn-outline-dark btn-sm" id="educator">
+                    <input type="radio" name="options" value="educator" autocomplete="off"> Educator
+                  </label>
+                  <label class="btn btn-outline-dark btn-sm" id="practitioner">
+                    <input type="radio" name="options" value="practitioner" autocomplete="off"> Practitioner
+                  </label>
+                </div>
           </div>
           
-          <a href="#" class="btn btn-primary">Ok</a>
-        </div>
       </div>
-  </body>
-</html>
+      
+
+  </footer>
+</body>
