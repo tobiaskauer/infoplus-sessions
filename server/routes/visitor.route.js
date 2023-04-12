@@ -4,7 +4,6 @@ const Visitor = require('../models/visitor.model')
 const router = Router()
 
 router.get('/', async (req, res) => {
-    console.log(req.body)
     try {
         const visitors = await Visitor.find({},'-_id category duration')
         if (!visitors) throw new Error('No Visitors found')
