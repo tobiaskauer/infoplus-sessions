@@ -1,6 +1,6 @@
 let target = "section#header"
 let api = "https://viscussion.de:3003/api/visitor"
-api = "http://localhost:3003/api/visitor"
+//api = "http://localhost:3003/api/visitor"
 let updateInterval = 30000
 let nodes = []
 let colorScale = d3.scaleOrdinal().domain(["practitioner","educator","researcher"]).range(["#B01CF5","#778AFF","#1CF5F5"])
