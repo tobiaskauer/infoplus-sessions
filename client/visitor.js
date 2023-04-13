@@ -1,6 +1,6 @@
 let target = "section#header"
 let api = "https://viscussion.de:3003/api/visitor"
-//api = "http://localhost:3003/api/visitor"
+api = "http://localhost:3003/api/visitor"
 let updateInterval = 30000
 let nodes = []
 let colorScale = d3.scaleOrdinal().domain(["practitioner","educator","researcher"]).range(["#B01CF5","#778AFF","#1CF5F5"])
@@ -37,6 +37,7 @@ function sendVisitorData(id) {
     type: 'POST',
     dataType:"json",
     data: JSON.stringify(data),
+    timeout: 3000,
     url: url,
     contentType: "application/json; charset=utf-8",
 
@@ -64,9 +65,11 @@ const updateVisitor = (category) => {
 }
 
 sendVisitorData() //initial data query
-setInterval(() => {
-  if(visitorData.id) updateVisitor()
-}, updateInterval);
+/*setInterval(() => {
+  if(visitorData.id) updateVisitor() 
+}, updateInterval);*///TODO determine session duration in a way that does not crash the server :)
+
+
 //END: SEND USER DETAILS TO API
 
 
@@ -84,6 +87,7 @@ const getVisitorData = () => {
       dataType:"json",
       url: api,
       contentType: "application/json; charset=utf-8",
+      timeout: 3000,
 
       success: function (data, status, xhr) {
         console.log(`[success] Received ${data.length} visitor traces from server.`)

@@ -5,7 +5,9 @@ const router = Router()
 
 router.get('/', async (req, res) => {
     try {
-        const visitors = await Visitor.find({},'-_id category duration')
+        const visitors = await Visitor.find({
+            //created_on: {$gt: new Date(2022, 04, 10)}
+        },'-_id category duration')
         if (!visitors) throw new Error('No Visitors found')
         res.status(200).json(visitors)
         
