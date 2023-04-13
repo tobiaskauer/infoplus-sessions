@@ -1,12 +1,14 @@
 const { Router } = require('express')
 const Visitor = require('../models/visitor.model')
-
 const router = Router()
+const releaseDate = '2023-04-13'
 
 router.get('/', async (req, res) => {
     try {
         const visitors = await Visitor.find({
-            //created_on: {$gt: new Date(2022, 04, 10)}
+            "createdAt": {$gte: releaseDate},
+            //"category":{$neq: "practitioner"}
+
         },'-_id category duration')
         if (!visitors) throw new Error('No Visitors found')
         res.status(200).json(visitors)
