@@ -20,7 +20,6 @@ let visitorData = {
 
 
 
-
 //BEGIN: SEND USER DETAILS TO API
 function sendVisitorData(id) {
   let url = (id) ? api+"/"+id : api
@@ -42,8 +41,13 @@ function sendVisitorData(id) {
     contentType: "application/json; charset=utf-8",
 
     success: function (data, status, xhr) {
-      if(!id) visitorData.id = data._id
-      //console.log(`[received] user trace`)
+      if(!id) {
+        visitorData.id = data._id
+        console.log(`[created] user trace ${visitorData.id}`)
+      } else {
+        console.log(`[updated] user trace ${visitorData.id}`)
+      }
+      
     },
 
     error: function(error, status, xhr) {
@@ -65,9 +69,9 @@ const updateVisitor = (category) => {
 }
 
 sendVisitorData() //initial data query
-/*setInterval(() => {
+setInterval(() => {
   if(visitorData.id) updateVisitor() 
-}, updateInterval);*///TODO determine session duration in a way that does not crash the server :)
+}, updateInterval);
 
 
 //END: SEND USER DETAILS TO API
@@ -105,10 +109,12 @@ getVisitorData()
 
 const renderNodes = (data) => {
   let radiusScale = d3.scaleLinear().domain(d3.extent(data, visit => visit.duration)).range([5,15])
+
+  
   
   let nodes = data.map((node ,i)=> {
     let color = node.category ? colorScale(node.category) : "#ffce1e"
-    let r = node.duration ? radiusScale(node.duration) : 1
+    let r = node.duration ? radiusScale(node.duration) : 3
     if (!i) r = 20
      
     let wobbleB = Math.random()*0.5+0.8

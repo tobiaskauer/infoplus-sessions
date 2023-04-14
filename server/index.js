@@ -9,13 +9,18 @@ const http = require('http');
 const https = require('https');
 const fs = require('fs');
 var morgan = require('morgan')
+require('dotenv').config();
+const ENVIRONMENT = process.env.ENVIRONMENT || 'PRODUCTION';
 
-app.use(morgan('common', {
-  stream: fs.createWriteStream('./access.log', {flags: 'a'})
-}))
+if(ENVIRONMENT == "PRODUCTION") {
+  app.use(morgan('common', {stream: fs.createWriteStream('./access.log', {flags: 'a'})}))
+} else {
+  app.use(morgan('dev',{}))
+}
+
   
 
-require('dotenv').config();
+
 
 app.use(cors())
 app.use(bodyParser.json())
@@ -23,8 +28,8 @@ app.use(mongoSanitize({replaceWith: '_'}))
 app.use('/api/visitor', VisitorRoutes)
 
 const credentials = {} 
-const ENVIRONMENT = process.env.ENVIRONMENT || 'local';
-if(ENVIRONMENT == "STAGING" || ENVIRONMENT == "PRODUCTION") {
+
+if(ENVIRONMENT == "PRODUCTION") {
   const CREDDIR = process.env.CREDDIR
   
   const privateKey = fs.readFileSync(CREDDIR+'privkey.pem', 'utf8');

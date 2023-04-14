@@ -1,7 +1,7 @@
 const { Router } = require('express')
 const Visitor = require('../models/visitor.model')
 const router = Router()
-const releaseDate = '2023-04-13'
+const releaseDate = '2023-04-14'
 
 router.get('/', async (req, res) => {
     try {
@@ -34,9 +34,12 @@ router.post('/', async (req, res) => {
 
 router.post('/:id', async (req, res) => {
     try {
-        const updatedVisitor = await Visitor.findByIdAndUpdate(req.params.id,req.body)
-        res.status(200)
-        
+        const updatedVisitor = await Visitor.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            {new: true}
+            )
+        res.status(200).json(updatedVisitor)
     } catch (error) {
         console.log(error) 
         res.status(500).json({ message: error.message })
