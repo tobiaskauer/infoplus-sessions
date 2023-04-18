@@ -7,6 +7,7 @@ router.get('/', async (req, res) => {
     try {
         const visitors = await Visitor.find({
             "createdAt": {$gte: releaseDate},
+            "duration": { $gt: 0} 
             //"category":{$neq: "practitioner"}
 
         },'-_id category duration')
