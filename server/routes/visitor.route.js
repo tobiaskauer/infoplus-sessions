@@ -9,8 +9,7 @@ router.get("/", async (req, res) => {
       {
         createdAt: { $gte: releaseDate },
         duration: { $gt: 0 },
-        category: { $ne: null },
-        //"category":{$neq: "practitioner"}
+        //category: { $ne: null },
       },
       "-_id category duration"
     );
