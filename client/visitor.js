@@ -1,7 +1,4 @@
-
-visualizeSessions(target) {
-  let target = "section#banner";
-
+let target = "section#banner";
 let api = "https://viscussion.de:3003/api/visitor";
 //api = "http://localhost:3003/api/visitor"
 let updateInterval = 30000;
@@ -245,4 +242,3 @@ $(document).ready(function () {
     }
   });
 });
-}
