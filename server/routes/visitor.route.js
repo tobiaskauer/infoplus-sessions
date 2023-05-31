@@ -20,6 +20,16 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/all", async (req, res) => {
+  try {
+    const visitors = await Visitor.find({});
+    if (!visitors) throw new Error("No Visitors found");
+    res.status(200).json(visitors);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 router.post("/", async (req, res) => {
   const newVisitor = new Visitor(req.body);
   try {
